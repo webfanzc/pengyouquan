@@ -217,18 +217,21 @@ function bindEvent() {
     $(".item-reply-likelist").hide();
     //点击评论按钮出现 点赞/评论,且只显示一个
     $(".item-ft").on('click', '.item-reply-btn', function (e) {
-        $(".item-reply-likelist").hide();
         curlikelist = $(this).siblings(".item-reply-likelist");
+        var index = curlikelist.index(".item-reply-likelist");
+        //遍历隐藏不是当前选项的选项卡
+        for (var i = 0, len = $(".item-reply-likelist").length; i < len; i++) {
+            if (i != index) {
+                $(".item-reply-likelist").eq(i).hide();
+            }
+        }
         curlikelist.animate({
             width: "toggle",
             height: "36px"
         }, 300)
         return false;
     })
-    //点击其他部分 点赞/评论按钮隐藏
-    $(window).on('click', function (e) {
-        $(".item-reply-likelist").hide();
-    })
+
     //点击评论按钮出现评论栏
     $(".item-ft").on('click', '.item-reply-likelist-comment', function () {
         $(this).parent(".item-reply-likelist").animate({
@@ -241,27 +244,27 @@ function bindEvent() {
     //点赞toggle
     var a = '<i>，</i><a class="reply-who" href="#">' + userName + '</a>';
     $(".item-reply-likelist-like").toggle(function () {
-        $(this).text("取消");
-        //如果有人赞过
-        if ($(this).parents('.item-right').find('.reply-like').length == 1) {
-            $(this)
-                .parents('.item-right')
-                .find('.reply-like')
-                .append(a);
-        } else {
-            //如果没人赞过
-            $(this)
-                .parents('.item-right')
-                .find('.reply-zone')
-                .append('<div class="reply-like"><i class="icon-like-blue"></i> <a class="reply-who" href="#">' + userName + '</a>')
-        }
-        $(this).parent('.item-reply-likelist').animate({
-            width: "toggle",
-            height: "36px"
-        }, 300);
+            $(this).text("取消");
+            //如果有人赞过
+            if ($(this).parents('.item-right').find('.reply-like').length == 1) {
+                $(this)
+                    .parents('.item-right')
+                    .find('.reply-like')
+                    .append(a);
+            } else {
+                //如果没人赞过
+                $(this)
+                    .parents('.item-right')
+                    .find('.reply-zone')
+                    .prepend('<div class="reply-like"><i class="icon-like-blue"></i> <a class="reply-who" href="#">' + userName + '</a>')
+            }
+            $(this).parent('.item-reply-likelist').animate({
+                width: "toggle",
+                height: "36px"
+            }, 300);
         }, //取消点赞
         function () {
-        $(this).text("点赞");
+            $(this).text("点赞");
             //由于数据绑定问题不会 暂时用append和remove来模拟
             if ($(this).parents('.item-right').find('.reply-like').children("a").length == 1) {
                 //如果只有自己点赞，将整个点赞节点删除
@@ -272,11 +275,11 @@ function bindEvent() {
                 $(this).parents('.item-right').find('.reply-like').children("i:last-child").remove();
             }
 
-        $(this).parent('.item-reply-likelist').animate({
-            width: "toggle",
-            height: "36px"
-        }, 300);
-    })
+            $(this).parent('.item-reply-likelist').animate({
+                width: "toggle",
+                height: "36px"
+            }, 300);
+        })
     //点击图片toggle
     var $windowW = $(".page-moments");
     //小图点击放大
@@ -305,6 +308,58 @@ function bindEvent() {
             overflow: "auto"
         });
         $(this).find(".pic-item").removeClass("pic-mgpd");
+    })
+    //评论功能实现
+    $(".moments-comment").hide();
+    $(".item-reply-likelist-comment").on('click', function (e) {
+        $(".moments-comment").show();
+        $(".moments-comment-input:eq(0)").focus();
+        curlikelist.animate({
+            width: "toggle",
+            height: "36px"
+        })
+        e.stopPropagation();
+    })
+    //点击非输入框区隐藏输入框
+    //点击其他部分 点赞/评论按钮隐藏
+    $(window).on('click', function (e) {
+        var target = e.target;
+        $(".item-reply-likelist").hide();
+        if (target.className != "moments-comment" && target.classList != "moments-comment-input" && target.className != "moments-comment-button") {
+            $(".moments-comment").hide();
+        }
+    });
+    // 监听输入框改变
+    $('.moments-comment-input').bind('input propertychange', function() {
+      if ($('.moments-comment-input').val() == ""){
+          //判断输入框是否为空
+          $('.moments-comment-button').css("background","#ccc");
+          $('.moments-comment-button').attr("disabled",true);
+      }else {
+          $('.moments-comment-button').attr("disabled",false);
+          $('.moments-comment-button').css("background","#47b111");
+      }
+    });
+//#47b111
+    $(".moments-comment").on('click', "button", function () {
+        var comment = curlikelist.parents(".moments-item").find(".reply-comment");
+        //如果已经有评论，增加一条评论,且输入不能为空
+            //若不为空，且已有评论
+            if (comment.parents(".reply-zone").find(".comment-item").length > 0) {
+                comment.append('<div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div>')
+
+            } else {
+                //若不为空，但是没有评论
+                curlikelist.parents(".moments-item").find('.reply-zone').append('<div class="reply-comment"><div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div></div>')
+            };
+            //隐藏评论区，重置input button
+            $(".moments-comment-input").val("");
+            $(".moments-comment").hide();
+            $('.moments-comment-button').attr("disabled",true);
+            $('.moments-comment-button').css(
+                "background","#ccc"
+            )
+
     })
 }
 
