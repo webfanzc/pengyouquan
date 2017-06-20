@@ -330,35 +330,40 @@ function bindEvent() {
         }
     });
     // 监听输入框改变
-    $('.moments-comment-input').bind('input propertychange', function() {
-      if ($('.moments-comment-input').val() == ""){
-          //判断输入框是否为空
-          $('.moments-comment-button').css("background","#ccc");
-          $('.moments-comment-button').attr("disabled",true);
-      }else {
-          $('.moments-comment-button').attr("disabled",false);
-          $('.moments-comment-button').css("background","#47b111");
-      }
+    $('.moments-comment-button').attr("disabled",true);
+    $('.moments-comment-button').css(
+        "background","#ccc"
+    )
+    $('.moments-comment-input').bind('input propertychange', function () {
+        if ($('.moments-comment-input').val() == "") {
+            //判断输入框是否为空
+            $('.moments-comment-button').css("background", "#ccc");
+            $('.moments-comment-button').attr("disabled", true);
+        } else {
+            $('.moments-comment-button').attr("disabled", false);
+            $('.moments-comment-button').css("background", "#47b111");
+        }
     });
 //#47b111
     $(".moments-comment").on('click', "button", function () {
         var comment = curlikelist.parents(".moments-item").find(".reply-comment");
         //如果已经有评论，增加一条评论,且输入不能为空
-            //若不为空，且已有评论
-            if (comment.parents(".reply-zone").find(".comment-item").length > 0) {
-                comment.append('<div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div>')
+        //若不为空，且已有评论
+        if (comment.parents(".reply-zone").find(".comment-item").length > 0) {
+            comment.append('<div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div>')
 
-            } else {
-                //若不为空，但是没有评论
-                curlikelist.parents(".moments-item").find('.reply-zone').append('<div class="reply-comment"><div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div></div>')
-            };
-            //隐藏评论区，重置input button
-            $(".moments-comment-input").val("");
-            $(".moments-comment").hide();
-            $('.moments-comment-button').attr("disabled",true);
-            $('.moments-comment-button').css(
-                "background","#ccc"
-            )
+        } else {
+            //若不为空，但是没有评论
+            curlikelist.parents(".moments-item").find('.reply-zone').append('<div class="reply-comment"><div class="comment-item"><a class="reply-who" href="#">' + userName + '</a>：' + $(".moments-comment-input").val() + '</div></div>')
+        }
+        ;
+        //隐藏评论区，重置input button
+        $(".moments-comment-input").val("");
+        $(".moments-comment").hide();
+        $('.moments-comment-button').attr("disabled", true);
+        $('.moments-comment-button').css(
+            "background", "#ccc"
+        )
 
     })
 }
